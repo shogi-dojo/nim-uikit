@@ -6,15 +6,17 @@ import ./runtime
 import ./foundation
 
 type
-  CGPoint* = object
+  # `bycopy`: Nim passes objects over 24 bytes by pointer, but the C ABI passes
+  # these structs by value (in d0-d3 on arm64), so `objc_msgSend` would read garbage.
+  CGPoint* {.bycopy.} = object
     x*, y*: float64
-  CGSize* = object
+  CGSize* {.bycopy.} = object
     width*, height*: float64
-  CGRect* = object
+  CGRect* {.bycopy.} = object
     origin*: CGPoint
     size*: CGSize
 
-  UIEdgeInsets* = object
+  UIEdgeInsets* {.bycopy.} = object
     top*, left*, bottom*, right*: float64
 
 const
