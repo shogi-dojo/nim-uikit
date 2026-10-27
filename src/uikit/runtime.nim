@@ -68,3 +68,25 @@ proc init*(obj: ID): ID =
 proc new*(cls: Class): ID =
   ## `[[cls alloc] init]`: an owned object the caller keeps alive.
   send0[ID](cls, sel("new"))
+
+proc retain*(obj: ID): ID {.discardable.} =
+  ## Keep `obj` alive past the current autorelease pool, for example an
+  ## object returned by a convenience constructor and stored in a global.
+  send0[ID](obj, sel("retain"))
+
+proc release*(obj: ID) =
+  ## Give up one ownership of `obj`, taken by `alloc`, `new`, `copy` or `retain`.
+  if obj != nil:
+    send0[void](obj, sel("release"))
+
+proc objc_autoreleasePoolPush(): pointer {.importc, cdecl.}
+proc objc_autoreleasePoolPop(pool: pointer) {.importc, cdecl.}
+
+template autoreleasepool*(body: untyped) =
+  ## `@autoreleasepool { body }`: autoreleased objects made in `body` are
+  ## released when it ends.
+  let pool = objc_autoreleasePoolPush()
+  try:
+    body
+  finally:
+    objc_autoreleasePoolPop(pool)
