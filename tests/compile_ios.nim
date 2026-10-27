@@ -8,5 +8,10 @@ proc main() =
   discard cls("NSObject")
   discard rect(0, 0, 10, 10)
   discard newWindow(screenBounds())
+  autoreleasepool:
+    let obj = retain(new(cls("NSObject")))
+    release(obj)
+    observe(obj, "description", "UIApplicationWillEnterForegroundNotification")
+  afterDelay(1.0, proc (context: pointer) {.cdecl.} = discard)
 
 main()
