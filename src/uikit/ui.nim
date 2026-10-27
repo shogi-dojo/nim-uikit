@@ -199,3 +199,7 @@ proc makeKeyAndVisible*(window: ID) =
 
 proc screenBounds*(): CGRect =
   send0[CGRect](send0[ID](cls("UIScreen"), sel("mainScreen")), sel("bounds"))
+
+proc applicationMain*(argc: cint, argv: pointer, principal: ID, delegate: ID): cint
+  {.importc: "UIApplicationMain", cdecl.}
+  ## Runs the UIKit loop. `delegate` is the name of the app delegate class.
